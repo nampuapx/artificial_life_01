@@ -1,0 +1,406 @@
+
+//====================================================
+//====   отображение на экране  ======================
+fn paint()
+ {
+	 
+	 clear(BLACK)                      // заливаем экран черным
+	 fbox(-390,-200,720,384, WHITE )   // заливаем мир белым
+//------- рисуем мир и ботов в соответсвии с зумом   ------------------
+  if ZOOM==4                          
+    { 
+      Paint_World_Zoom4()              
+      Paint_Bots_Zoom4() 
+      }
+  if ZOOM==12  
+    { 
+      Paint_World_Zoom12()
+      Paint_Bots_Zoom12() 
+    }
+  if ZOOM==24 
+  { 
+    Paint_World_Zoom24()
+    Paint_Bots_Zoom24() 
+  }  
+  
+  if(0){
+//-------- выводим на экран название сезона     -----------------------------
+   $sson = mod(age_season,4)
+   if ($sson == 0) { fbox( -380, 210 , 60 , 25 , GREEN ) print("summer", -350,215,BLACK)}
+   else
+    {
+      if ($sson==2) { fbox( -380, 210 , 60 , 25 , BLUE  )  print("winter", -350,215,BLACK)}
+	  else 
+	  { fbox( -380, 210 , 60 , 25 , YELLOW)
+         if ($sson==1) {  print("autumn", -350,215,BLACK)}
+		 else          {  print("spring", -350,215,BLACK)}
+      }
+    } 
+//---     выводим на экран разные цифирки  -----------------------------------
+//----------------------------------------------------------------------------
+   fbox(-310,205,40,20,#555555)
+   print( n2s(bot_count),-290,213)   // количество ботов (живые+органика)
+//------------------------------------------------------------------------------   
+   fbox (-240, 205 , 40 , 20 , #333300 )
+   print( n2s(age1), -220, 215 )     // килоходов
+
+   fbox (-190, 205 , 40 , 20 , #333300 )
+   print( n2s(age0), -170, 215 )     // ходов
+
+ //--------------------------------------------------------------------------
+   fbox (-110, 205 , 40 , 20 , #662222 )
+   print( n2s(LFT), -90, 215 )       
+
+   fbox (-60, 205 , 40 , 20 , #222266 )
+   print( n2s(TP), -40, 215 )
+//-----------------------------------------------------------------------------   
+   fbox (0, 205 , 80 , 20 , #441111 )    // значения переменных
+   print( n2s(foo0), 40, 215 )           // которые я использовал для отладки
+
+   fbox (80, 205 , 80 , 20 , #114411 )
+   print( n2s(foo1), 120, 215 )
+
+   fbox (160, 205 , 80 , 20 , #111144 )
+   print( n2s(foo2), 200, 215 )
+//----------------------------------------------------------------------------- 
+   box( 350, -200, 40, 60)               // кнопки выбора режима
+   box( 350, -130, 40, 60)
+   box( 350, -60, 40, 60)
+   box( 350,  10, 40, 60)
+   
+   fbox(360,ViewState*70-190,20,40,#999900)  // отметим текущий режим
+   
+   box( 350, 80, 40, 120)                // кнопка включения/отключения анимации
+  } 
+ }
+ 
+ 
+//====  Здесь начинается МАГИЯ  ===================
+//====  сам не понимаю :(       ===================
+
+ //========   ZOOM4   =============================
+ fn Paint_Bots_Zoom4()
+ {
+   $x=0
+   while ( $x < WORLD_WIDTH )
+   {
+      $y=0
+      while ( $y < WORLD_HEIGHT )
+      { 
+         $botN = world[$x,$y+1] 
+  
+         if ( $botN > WC_EMPTY )
+            { 
+              $xx=$x+LFT            
+              if ( $xx > 179 ) { $xx = $xx - 180 }       
+              
+             if ( bots[ $botN , LIVING ] <= LV_ORGANIC_SINK ) 
+                  { 
+                    fbox ( $xx*4-389 , $y*4-199 , 3 , 3 , ORGANIC_COLOR[ ViewState,0] ) 
+                   // fbox ( $xx*4-389 , $y*4-199 , 2 , 2 , #ffffff ) 
+                     go p4
+                  }           
+                       
+              if ( bots[ $botN , LIVING ] ==  LV_ALIVE ) 
+                  { fbox ( $xx*4-390 , $y*4-200 , 4 , 4 , get_bot_color( $botN ) ) 
+                     box ( $xx*4-390 , $y*4-200 , 4 , 4 , #444444 ) 
+                  }
+p4:                                           
+             }     
+          $y=$y+1
+      }
+      $x=$x+1
+   }
+ }
+ 
+ //================================================
+fn Paint_World_Zoom4()
+  {
+
+   fbox(-400,185, 750,18,BLACK)
+   $lx= LFT*4-390  $i=0 
+   while $i<180
+   { 
+    if $lx>330 { $lx = $lx - 720 }
+    line($lx,185,$lx,188,WHITE)
+    print(n2s($i),$lx,196)
+    $lx=$lx+120
+    $i=$i+30
+   }
+   $i=-176 $lx=6
+   while $i<184
+   {
+	 line(-390,$i,330,$i,#dddddd)
+	 //print(n2s($lx),340,$i-2,#666666)
+	 $lx=$lx+6
+	 $i=$i+24  
+   }
+  }
+  
+ //================================================
+ //========   ZOOM12  =============================
+ fn Paint_Bots_Zoom12()
+ {
+   $x=0
+   while ( $x < 60 )
+   {
+      $y=0
+      while ( $y < 32 )
+      {
+          $xx=$x+240-LFT
+          if $xx>179 { $xx=$xx-180 }
+          $yy=$y+TP+1
+          
+          $botN = world[$xx,$yy] 
+         if ( $botN > WC_EMPTY )
+          {     
+             if ( bots[ $botN , LIVING ] <= LV_ORGANIC_SINK )
+               { 
+                  fbox ( $x*12-388 , $y*12-198 , 9 , 9 , ORGANIC_COLOR[ ViewState,0])
+                   box ( $x*12-387 , $y*12-197 , 6 , 6 , #ffffff )
+                   go p12
+               }   
+             if ( bots[ $botN , LIVING ] == LV_ALIVE  ) 
+               {  
+                     fbox ( $x*12-390 , $y*12-200 , 12 , 12 , get_bot_color( $botN ) ) 
+                     box ( $x*12-390 , $y*12-200 , 12 , 12 ,  BLACK) //#444444
+               }   
+p12:       
+          }
+        $y=$y+1   
+       }
+       $x=$x+1
+    }
+//333333333333333333333333333333333333333333333333333333333333333333333333333333	
+//---------------------------------------------------------------------------	
+   $x=0
+   while ( $x < 60 )
+   {
+      $y=0
+      while ( $y < 32 )
+       {
+          $xx=$x+240-LFT
+          if $xx>179 { $xx=$xx-180 }
+          $yy=$y+TP+1
+          
+           $botN = world[$xx,$yy]
+	       if ( bots[ $botN , LIVING ] == LV_ALIVE ) 
+	       {		
+	         $a=isMulti($botN)
+	          if ( ($a == 1) || ($a == 2)) { fbox ( $x*12-386 , $y*12-196 , 4 , 4 , #000000 )}
+	          if ( $a == 3 )               { fbox ( $x*12-386 , $y*12-196 , 4 , 4 , #777777 )}
+
+             $mn = bots[$botN, MNEXT]
+             if  $mn > 0
+              {
+                $mnXX=bots[ $mn, X_COORD ]
+                $mnYY=bots[ $mn, Y_COORD ]
+                $mnX = $mnXX - 240 + LFT
+                if ( $mnX < 0 ) { $mnX = $mnX + 180 }
+                $mnY=$mnYY-TP-1
+                line( $x*12-384 , $y*12-194 , $mnX*12-384 , $mnY*12-194 ,BLACK)
+               }
+	        }
+         $y=$y+1
+        }
+     $x=$x+1     
+   }
+   
+//333333333333333333333333333333333333333333333333333333333333333333333333333333	
+ }
+
+ //================================================
+ fn Paint_World_Zoom12()
+ { 
+   $tp = TP
+   $i=-200
+   while ($i<184)  
+   {
+	 if mod($tp,6)==0
+	 { line(-390,$i,330,$i,#dddddd)
+	  //print(n2s($tp),340,$i-6,#666666)
+	 }
+      $tp = $tp +1
+      $i=$i+12
+   }
+
+   $ll= 240-LFT
+   if $ll>179 { $ll = $ll - 180 }
+    $i=-390 
+   while $i<330
+   { 
+    //print(n2s($ll),$i,196)
+    line($i,185,$i,188,WHITE)
+    $ll=$ll+4
+    if $ll>179 { $ll = $ll-180 }
+    $i=$i+48
+   }
+ }
+ 
+ //================================================
+ //========   ZOOM24  =============================
+ fn Paint_Bots_Zoom24()
+ {
+   $x=0
+   while ( $x < 30 )
+   {
+      $y=0
+      while ( $y < 16 )
+      {
+          $xx=$x+255-LFT
+          if $xx>179 { $xx=$xx-180 }
+          $yy=$y+TP+1
+          
+          $botN = world[$xx,$yy] 
+          
+         if ( $botN > WC_EMPTY)
+          {     
+             if ( bots[ $botN , LIVING ] <= LV_ORGANIC_SINK ) 
+               { 
+                  fbox ( $x*24-387, $y*24-197 , 19 , 19 , ORGANIC_COLOR[ ViewState,0] )
+                  box ( $x*24-386 , $y*24-196 , 16 , 16 , #ffffff )               
+                  go p24
+               }      
+               
+             if ( bots[ $botN , LIVING ] == LV_ALIVE ) 
+               {
+                  fbox ( $x*24-390 , $y*24-200 , 24 , 24 , get_bot_color($botN) )    
+                   box ( $x*24-390 , $y*24-200 , 24 , 24 , #444444 ) 
+					      $a=isMulti($botN)
+					      if ( ($a == 1) || ($a == 2)) { box ( $x*24-386 , $y*24-196 , 16 , 16 , #ffffff )}
+					      if ( $a == 3 )               { box ( $x*24-386 , $y*24-196 , 16 , 16 , #444444 )}
+                  $bd = bots[ $botN , DIRECT ]
+                  if $bd==0 { line( $x*24-378, $y*24-188, $x*24-390 , $y*24-200, WHITE )  goto bdone24 }
+                  if $bd==1 { line( $x*24-378, $y*24-188, $x*24-378 , $y*24-200, WHITE )  goto bdone24 }
+                  if $bd==2 { line( $x*24-378, $y*24-188, $x*24-366 , $y*24-200, WHITE )  goto bdone24 }
+                  if $bd==3 { line( $x*24-378, $y*24-188, $x*24-366 , $y*24-188, WHITE )  goto bdone24 }
+                  if $bd==4 { line( $x*24-378, $y*24-188, $x*24-366 , $y*24-176, WHITE )  goto bdone24 }
+                  if $bd==5 { line( $x*24-378, $y*24-188, $x*24-378 , $y*24-176, WHITE )  goto bdone24 }
+                  if $bd==6 { line( $x*24-378, $y*24-188, $x*24-390 , $y*24-176, WHITE )  goto bdone24 }
+                  if $bd==7 { line( $x*24-378, $y*24-188, $x*24-390 , $y*24-188, WHITE )  goto bdone24 }
+bdone24:                                                                      
+                  //if (ViewState==2) { print(n2s( bots[ $botN , MINERAL ] ),$x*24-378,$y*24-188,BLACK) }
+                 // else              { print(n2s( bots[ $botN , HEALTH  ] ),$x*24-378,$y*24-188,BLACK) }
+                }
+p24:       
+          }
+        $y=$y+1     
+       }
+       $x=$x+1
+    }
+ }
+ 
+//=================================================
+ fn Paint_World_Zoom24()
+ {
+   $tp = TP
+   $i=-200
+
+   while ($i<184)  
+   {
+	 if mod($tp,6)==0
+	 { line(-390,$i,330,$i,#dddddd)
+	   //print(n2s($tp),340,$i-10,#666666)
+	 }
+      $tp = $tp +1
+      $i=$i+24
+   }   
+
+ //  fbox(-400,185, 750,18,BLACK)
+
+   $ll= 255-LFT
+   if $ll>179 { $ll = $ll - 180 }
+    $i=-390 
+   while $i<330
+   { 
+    //print(n2s($ll),$i,196)
+    line($i,185,$i,188,WHITE)
+    $ll=$ll+2
+    if $ll>179 { $ll = $ll-180 }
+    $i=$i+48
+   }
+ }
+
+
+//=========================================================
+
+fn LFT_TP()
+ {
+   if ZOOM==4  
+      { 
+       X_centr=X_centr-89+( (X_COORD0 + 390) div 4 )
+       Y_centr=(Y_COORD0+200) div 4
+      }
+   if ZOOM==12 
+     { 
+       X_centr=X_centr-29+( (X_COORD0 + 390) div 12)
+       Y_centr=Y_centr-15+((Y_COORD0+200) div 12)                       
+      }                      
+   if ZOOM==24 
+      {
+        X_centr=X_centr-14+( (X_COORD0 + 390) div 24)
+        Y_centr=Y_centr-7+((Y_COORD0+200) div 24)  
+      }               
+                          
+    if ( X_centr > 179 ) { X_centr = X_centr - 180 }
+    if ( X_centr < 0   ) { X_centr = X_centr + 180 }
+                          
+    LFT = 91-X_centr
+    if ( LFT > 179 ) { LFT = LFT - 180 }
+    if ( LFT < 0   ) { LFT = LFT + 180 }                     
+                         
+     $gg= Y_COORD1 - Y_COORD0
+    if  ( $gg<-50 )
+       { if ZOOM==24 { ZOOM = 12 }  
+         else        { ZOOM = 4  }  
+       }
+     if ( $gg>50 ) 
+       { if ZOOM==4  { ZOOM = 12 }
+         else        { ZOOM = 24 }
+       }
+                          
+      if ZOOM == 4 { Y_centr=89 }
+      if ZOOM == 12
+        { TP = Y_centr - 16
+          if TP < 0 { TP=0   Y_centr=16 }
+          if TP > 64 { TP=64 Y_centr=80 }
+         }
+       if ZOOM == 24
+         { TP = Y_centr - 8
+           if TP < 0  { TP=0  Y_centr=8  }
+           if TP > 80 { TP=80 Y_centr=88 }
+         }                                                 
+ }
+
+//жжжжжжжжжжжжжжжжжжжхжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжжж
+//===== получить цвет бота в зависимости от режима отображения  =========
+ fn get_bot_color( $bot )
+  { 
+    if ViewState==0
+      {
+        $tColor= bots[ $bot , COLOR ]
+        ret( get_color( bots[ $bot , C_RED ], bots[ $bot , C_GREEN ], bots[ $bot , C_BLUE ] ) )
+      }
+    if ViewState==1
+      {
+         $tColor= 255-(bots[ $bot , HEALTH ] div 4)
+         ret( get_color( 255, $tColor , 0 ) ) 
+      }
+	if ViewState==2
+	  {
+       $tColor= 255-(bots[ $bot , MINERAL ] div 4)
+        ret( get_color( 255, 100 , $tColor ))
+	  }
+    if ViewState==3
+	  {  
+	     $im = isMulti($bot)
+	    if( $im == 0 ) { ret(#dddd77) }
+		if( $im == 3 ) { ret(#c7c418) }  //#ff6600
+		else { ret(#bb00bb) }  //#ffff00
+	  }
+  }
+ 
+ // 720 24-30 12-60 4-180
+ // 384 24-16 12-32 4-96
+ // 180*96=17340  *200 = 3456000
+ 

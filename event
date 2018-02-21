@@ -1,0 +1,65 @@
+// отработка кликов
+fn event()
+{
+	while( get_event() ) 
+	{  
+		if EVT[ EVT_TYPE ] == EVT_MOUSEBUTTONDOWN
+		{
+			rand_seed( get_seconds())  // каждым кликом обновляем переменную для рандомных операций
+			if ( (EVT[ EVT_X ] > -390) && (EVT[ EVT_X ] < 330) )
+			{  
+				if ( (EVT[ EVT_Y ] > -200) && (EVT[ EVT_Y ] < 184) )
+				{   // клик произошел по полю, где происходит симуляция
+					C_COORD=1
+					X_COORD0 = EVT[ EVT_X ]
+					Y_COORD0 = EVT[ EVT_Y ]
+				}
+			}
+			if ( EVT[ EVT_X ] > 340 )  // клик произошел в правой части экрана, где кнопки
+			{ 
+				if ( EVT[ EVT_Y ] < -130 ) 
+				{ 
+					ViewState = 0      // первая кнопка (режим просмотра 0)
+				}
+				else
+				{ 
+					if ( EVT[ EVT_Y ] < -60 ) 
+					{
+						ViewState = 1 // вторая кнопка (режим просмотра 1)
+					} 
+					else
+					{ 
+						if ( EVT[ EVT_Y ] < 10 ) 
+						{ 
+							ViewState = 2 // третья кнопка (режим просмотра 2)
+						} 
+						else
+						{  
+							if ( EVT[ EVT_Y ] < 80 ) 
+							{  
+								ViewState = 3 // четвертая кнопка (режим просмотра 3)
+							} 
+							else
+							{
+								PaintState = -1*PaintState // пятая кнопка, вкл/выкл режим анимации
+							}
+						}
+					}
+				}
+			}
+		}
+         // отработка окончания клика      
+		if EVT[ EVT_TYPE ] == EVT_MOUSEBUTTONUP
+		{    	       
+			if ( C_COORD==1 ) // если клик был в рабочем поле, 
+			{
+				X_COORD1 = EVT[ EVT_X ]    
+				Y_COORD1 = EVT[ EVT_Y ]
+				LFT_TP()     //то изменить центральную координату отображения мира
+				C_COORD = 0 
+			}                         	       
+		}
+		if EVT[ EVT_TYPE ] == EVT_QUIT  // выйти из приложения
+		{ halt } 
+	}              
+}
